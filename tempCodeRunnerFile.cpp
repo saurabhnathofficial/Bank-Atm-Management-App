@@ -1,2 +1,2 @@
-
-            cin>>email;
+== "123456" && password == "admin123")
+        {
