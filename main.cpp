@@ -8,10 +8,17 @@ using namespace std;
 
 class bank
 {
+private:
+    int pin;
+    string id, password, name, fname, address, phone;
+    float balance;
+
 public:
     void menu();
     void atm_management();
     void bank_management();
+    void new_user();
+    void already_user();
 };
 
 void bank::menu()
@@ -47,7 +54,7 @@ p:
             pin += ch;
             cout << '*';
         }
-        cout<<"\n";
+        cout << "\n";
         cout << "\n\t\t\t\tEnter Password : ";
 
         // Reading Password (length : 6) from user
@@ -57,7 +64,7 @@ p:
             password += ch;
             cout << '*';
         }
-        cout<<"\n";
+        cout << "\n";
         // Authentication
         if (email == "admin@gmail.com" && pin == "123456" && password == "654321")
         {
@@ -66,7 +73,7 @@ p:
         }
         else
         {
-            cout << "\n\t\t\t\tInvalid Login Credentials!";
+            cout << "\n\t\t\t\tInvalid Login Credentials! \t(Press Enter for Home)";
         }
         break;
 
@@ -136,8 +143,8 @@ p:
     cout << "\t\t\t7. Search User Record\n";
     cout << "\t\t\t8. Update User Record\n";
     cout << "\t\t\t9. Delete User\n";
-    cout << "\t\t\t9. Show All Records\n";
-    cout << "\t\t\t10. Go Back\n";
+    cout << "\t\t\t10. Show All Records\n";
+    cout << "\t\t\t11. Go Back\n";
 
     cout << "\t\t\t==========================================" << endl;
     cout << "\n\t\t\tEnter your choice: ";
@@ -147,9 +154,11 @@ p:
     {
     case 1:
         // New User
+        new_user();
         break;
     case 2:
         // Existing User
+        already_user();
         break;
     case 3:
         // Deposit Option
@@ -184,6 +193,131 @@ p:
     getch();
     goto p;
 }
+void bank::new_user()
+{
+p:
+    system("cls");
+
+    fstream file; // file handling
+    int tpin;
+    string tname, tfname, tpassword, taddress, tphone, tid; // temp variables
+    float tbalance;
+
+    cout << "\n\n\t\t\t==========================================" << endl;
+    cout << "\t\t\t Add New User";
+
+    cout << "\n\t\t\tEnter ID: ";
+    cin >> tid;
+    cout << "\n\t\t\tEnter Name: ";
+    cin >> tname;
+    cout << "\n\t\t\tFather Name: ";
+    cin >> tfname;
+    cout << "\n\t\t\tAddress: ";
+    cin >> taddress;
+    cout << "\n\t\t\tPin Code (6 Digit): ";
+    cin >> tpin;
+    cout << "\n\t\t\tPassword (6 Digit): ";
+    cin >> tpassword;
+    cout << "\n\t\t\tPhone No.: ";
+    cin >> tphone;
+    cout << "\n\t\t\tBalance: ";
+    cin >> tbalance;
+
+    // Open the file in read mode to check if the user already exists
+    file.open("bank.txt", ios::in);
+    if (!file.is_open())
+    {
+        cout << "\n\t\t\tError: Unable to open the file for reading!";
+        return;
+    }
+
+    string id, name, fname, address, phone, password;
+    int pin;
+    float balance;
+    bool exists = false;
+
+    // Check for existing user
+    while (file >> id >> name >> fname >> address >> pin >> password >> phone >> balance)
+    {
+        if (tid == id)
+        {
+            cout << "\n\t\t\tUser already exists!";
+            file.close();
+            getch();
+            goto p;
+        }
+    }
+    file.close();
+
+    // Open the file in append mode to add a new user
+    file.open("bank.txt", ios::app);
+    if (!file.is_open())
+    {
+        cout << "\n\t\t\tError: Unable to open the file for writing!";
+        return;
+    }
+
+    file << tid << " " << tname << " " << tfname << " " << taddress << " " << tpin
+         << " " << tpassword << " " << tphone << " " << tbalance << "\n";
+    file.close();
+
+    cout << "\n\t\t\tUser added successfully!";
+    cout << "\n\n\t\t\t==========================================" << endl;
+}
+
+void bank::already_user()
+{
+    system("cls");
+    fstream file;
+    string fid;
+    bool found = false;
+
+    cout << "\n\t\t\t\tAlready User Account" << endl;
+    file.open("bank.txt", ios::in);
+    if (!file.is_open())
+    {
+        cout << "\n\t\t\t\tError: Unable to open the file!";
+        return;
+    }
+
+    cout << "\n\t\t\t\tEnter User ID: ";
+    cin >> fid;
+
+    string id, name, fname, address, phone, password;
+    int pin;
+    float balance;
+
+    while (file >> id >> name >> fname >> address >> pin >> password >> phone >> balance)
+    {
+        if (fid == id)
+        {
+            system("cls");
+            cout << "\n\t\t\t\tUser Found!";
+            cout << "\n\n\t\t\t****************************************";
+            cout << "\n\n\t\t\t\tUser ID: " << id;
+            cout << "\n\t\t\t\tName: " << name;
+            cout << "\n\t\t\t\tFather's Name: " << fname;
+            cout << "\n\t\t\t\tAddress: " << address;
+            cout << "\n\t\t\t\tPin Code: " << pin;
+            cout << "\n\t\t\t\tPhone No.: " << phone;
+            cout << "\n\t\t\t\tBalance: " << balance;
+            cout << "\n\n\t\t\t****************************************";
+            cout << "\nt\t\t\t\t(Press Enter to GoBack)";
+            found = true;
+            break;
+        }
+    }
+
+    file.close();
+
+    if (!found)
+    {
+        cout << "\n\t\t\t\tUser Not Found!";
+    }
+
+    getch();
+}
+
 int main()
 {
     bank obj;
